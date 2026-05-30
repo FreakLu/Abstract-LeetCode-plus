@@ -11,9 +11,7 @@ const SolveQuestion = () => {
 
     const [history, setHistory] = useState([]);
     const [activeId, setActiveId] = useState(null);
-    const [displayedText, setDisplayedText] = useState(""); 
-    const [isTyping, setIsTyping] = useState(false);
-
+    
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const [placeholderText, setPlaceholderText] = useState("");
@@ -21,34 +19,6 @@ const SolveQuestion = () => {
     const [loopNum, setLoopNum] = useState(0);
 
     const [isFocused, setIsFocused] = useState(false);
-
-
-    useEffect(() => {
-        // 只有在有选中的记录，且该记录处于正在生成状态时，才触发打字机
-        const activeRecord = history.find(item => item.id === activeId);
-        
-        if (activeRecord && isTyping) {
-            let index = 0;
-            const fullText = activeRecord.content;
-            
-            const interval = setInterval(() => {
-                if (index <= fullText.length) {
-                    // 核心修复：使用 slice 直接截取，绝不使用 prev + [index] 拼接，从物理上隔绝 undefined
-                    setDisplayedText(fullText.slice(0, index));
-                    index++;
-                } else {
-                    clearInterval(interval);
-                    setIsTyping(false); // 打字结束
-                }
-            }, 10); 
-            return () => clearInterval(interval);
-        } else if (activeRecord && !isTyping) {
-            // 如果是点击查看历史记录，直接瞬间显示全文本，不需要打字机
-            setDisplayedText(activeRecord.content);
-        } else {
-            setDisplayedText("");
-        }
-    }, [activeId, history, isTyping]);
 
     useEffect(() => {
         if (isFocused || activeId || isSidebarOpen) {
@@ -91,10 +61,12 @@ const SolveQuestion = () => {
         const currentQuestion = question.trim(); 
         if (!currentQuestion) return;
 
+        const match = currentQuestion.match(/\d+/); 
+        const displayTitle = match ? `Leetcode ${match[0]}` : currentQuestion; 
+
         setLoading(true);
         setError("");
         setQuestion(""); 
-        setDisplayedText(""); 
 
         // 1. 查重逻辑：寻找是否已经搜过这个相同的词（忽略大小写）
         const existingRecord = history.find(item => item.title.toLowerCase() === currentQuestion.toLowerCase());
@@ -112,7 +84,7 @@ const SolveQuestion = () => {
             targetId = Date.now().toString();
             const tempRecord = {
                 id: targetId,
-                title: currentQuestion,
+                title: displayTitle,
                 content: "", 
                 isLoading: true 
             };
@@ -121,11 +93,17 @@ const SolveQuestion = () => {
 
         // 2. 强行切入目标记录，触发 UI 裂变
         setActiveId(targetId);
-        setIsTyping(false);
         setIsSidebarOpen(true);
 
         // 3. 开始网络请求
-        const result = await solveQuestion(currentQuestion);
+        const result = await solveQuestion(currentQuestion, (streamedText) => {
+            // 每收到几个字，就立刻更新到屏幕上
+            setHistory(prev => prev.map(item => 
+                item.id === targetId 
+                    ? { ...item, content: streamedText, isLoading: false }
+                    : item
+            ));
+        });
 
         if (result.error) {
             setError(result.error);
@@ -139,7 +117,6 @@ const SolveQuestion = () => {
                     ? { ...item, content: result.response, isLoading: false }
                     : item
             ));
-            setIsTyping(true); 
         }
 
         setLoading(false);
@@ -163,7 +140,6 @@ const SolveQuestion = () => {
                                 className={`history-item ${item.id === activeId ? 'active' : ''}`}
                                 onClick={() => {
                                     setActiveId(item.id);
-                                    setIsTyping(false); // 切换历史记录时关闭打字机，直接显示
                                 }}
                             >
                                 {item.title}
@@ -196,7 +172,7 @@ const SolveQuestion = () => {
                         ) : (
                             <div className="response-text">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {displayedText}
+                                    {history.find(item => item.id === activeId)?.content || ""}
                                 </ReactMarkdown>
                             </div>
                         )}
