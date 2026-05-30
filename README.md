@@ -1,21 +1,16 @@
 # Abstract-LeetCode-Plus
 
-[Getting Started / 快速开始](#getting-started--快速开始)
+![V1.1 dark theme available/深色模式支持](pic/dark_theme.png)
+
+[Getting Started /快速开始](#getting-started--快速开始)
 
 ABSTRACT is an intelligent study and review tool designed specifically for mastering LeetCode questions. It helps users organize, summarize, and retain key problem-solving patterns efficiently. With structured note-taking, spaced repetition, and AI-powered insights, ABSTRACT makes coding interview preparation faster and more effective.
 
 ABSTRACT 是一款专为刷 LeetCode 打造的智能学习与复习辅助工具。它能够高效帮助用户梳理、总结并固化核心解题模式。通过结构化的笔记沉淀、渐进式重复记忆算法以及大模型的深度洞察，ABSTRACT 让技术面试的准备过程变得更加高效和精准。
 
-
-
 * Contributor: [Jonas Li](yunzhe-li.top) ｜ FreakLu
 
-
 ---
-
-## V1.1 dark theme available/深色模式支持
-
-![V1.1 dark theme available/深色模式支持](pic/dark_theme.png)
 
 ![](pic/main.gif)
 
