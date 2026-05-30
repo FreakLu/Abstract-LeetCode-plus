@@ -1,95 +1,373 @@
-.container {
-    /*width: 1000px;*/
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
-    text-align: center;
+/* =========================================
+   1. 骨架与状态机 (IDE 布局核心)
+========================================= */
+
+/* 最外层包装：锁死 100% 高度，开启水平排列 */
+.app-wrapper {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 0;
 }
 
+/* 侧边栏：仅在 ide-mode 下渲染 */
+.sidebar {
+    width: 280px; /* 固定侧边栏宽度 */
+    background-color: var(--card-bg); /* 背景稍微深一点，与右侧区分 */
+    border-right: 1px solid var(--border-color); /* 物理分割线 */
+    display: flex;
+    flex-direction: column;
+    padding: 20px 15px;
+    box-sizing: border-box;
+    flex-shrink: 0; /* 核心：无论屏幕多窄，绝对不准挤压侧边栏 */
+}
+
+/* 右侧/中央主内容区 */
+.main-content {
+    flex: 1; /* 吃掉侧边栏剩下的所有屏幕宽度 */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+
+    min-height: 0;
+    min-width: 0;
+    position: relative;
+}
+
+/* =========================================
+   2. 两种模式的专属容器控制
+========================================= */
+
+/* 主页模式：垂直居中偏上 */
+.center-mode .main-content {
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 25vh;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* IDE 对话模式：内部铺满，限制最大阅读宽度 */
+.ide-mode .main-content {
+    padding: 20px 40px 30px 40px; /* 上左右下 留白 */
+    max-width: 1200px; /* 防止屏幕过宽时阅读视线太长 */
+    margin: 0 auto;    /* 保证内容区在大屏下依然居中 */
+    width: 100%;
+}
+
+/* =========================================
+   3. 侧边栏组件 (历史记录)
+========================================= */
+
+.sidebar-title {
+    font-size: 16px;
+    color: var(--text-main);
+    text-shadow: none;
+    margin-bottom: 30px;
+    cursor: pointer; /* 提示用户可点击 */
+    text-align: center;
+    transition: opacity 0.2s ease;
+    user-select: none;
+}
+
+.sidebar-title:hover {
+    opacity: 0.7; /* 悬浮反馈 */
+}
+
+@media (prefers-color-scheme: dark) {
+    .sidebar-title {
+        color: #ffffff;
+        text-shadow: 0 0 2px #ffffff, 0 0 8px #3a7bd5;
+    }
+}
+
+.history-list {
+    flex: 1; /* 占据侧边栏剩余高度 */
+    min-height: 0; /* 防弹簧撑爆 */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* 列表项间距 */
+}
+
+.history-item {
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-muted);
+    /* 超出部分省略号截断 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+}
+
+.history-item:hover {
+    background-color: rgba(255, 255, 255, 0.05); /* 悬浮微亮 */
+    color: var(--text-main);
+}
+
+.history-item.active {
+    background-color: var(--border-color); /* 选中项高亮底色 */
+    color: var(--text-main);
+    font-weight: bold;
+    box-shadow: inset 3px 0 0 #3a7bd5; /* Mac 侧边栏经典的左侧指示条 */
+}
+
+.sidebar-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;       /* 和你的搜索框高度保持一致的视觉比例 */
+    height: 52px;
+    border-radius: 50%; /* 绝对圆形 */
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;    /* 防止被长输入框挤压变形 */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-toggle-btn:hover {
+    border-color: #3a7bd5;
+    color: #3a7bd5;
+    box-shadow: 0 0 15px rgba(58, 123, 213, 0.4);
+}
+
+/* SVG 箭头微调和旋转动画 */
+.sidebar-toggle-btn svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+/* 核心逻辑：侧边栏打开时，箭头平滑旋转 180 度变成向左 */
+.sidebar-toggle-btn.open svg {
+    transform: rotate(180deg);
+}
+
+/* =========================================
+   4. 标题与答案区 (主内容区)
+========================================= */
+
+.main-title {
+    font-size: 28px;
+    margin-bottom: 40px;
+    color: var(--text-main);
+    text-shadow: 0 2px 4px rgba(58, 123, 213, 0.15);
+    letter-spacing: 2px;
+    text-align: center;
+    transition: opacity 0s ease, visibility 0s ease; 
+}
+
+@media (prefers-color-scheme: dark) {
+    .main-title {
+        color: #ffffff;
+        text-shadow: 0 0 5px #ffffff, 0 0 12px #3a7bd5;
+    }
+}
+.main-title.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.response-container {
+    flex: 1; 
+    min-height: 0; /* 核心：上面的撑满，下面的锁死，只能在这里发生滚动 */
+    overflow-y: auto; 
+    
+    margin-bottom: 20px;
+    background-color: transparent;
+    word-break: break-word;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 20px, black calc(100% - 20px), transparent 100%);
+}
+
+/* =========================================
+   5. 表单与按钮
+========================================= */
+
 .question-form {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* 2. IDE 对话模式下：强制压到底部 */
+.ide-mode .question-form {
+    margin-top: auto; 
+    padding-bottom: 20px; /* 底部留出一点呼吸空间 */
+}
+
+/* 3. 主页居中模式下：限制最大宽度即可 */
+.center-mode .question-form {
+    max-width: 800px; 
+    /* 这里不需要 margin-top: auto，让父容器的 padding-top 顺其自然排布 */
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
 }
 
 .question-input {
-    width: 50%;
-    padding: 15px 10px 15px 25px;
-    border: 1px solid #ccc;
-    height: 8px;
+    flex: 1;
+    min-width: 250px;
+    padding: 16px 25px;
+    font-size: 16px;
     border-radius: 50px;
-    font-size: 14px;
-    box-shadow: 0px 2px 8px 0px rgba(60, 64, 67, 0.25)
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    outline: none;
+    transition: all 0.3s ease;
+    caret-color: #3a7bd5;
 }
-.question-input:hover{
-    width: 50%;
-    padding: 15px 10px 15px 25px;
-    border: 1px solid #ccc;
-    height: 8px;
+
+.virtual-response-preview {
+    margin-top: 60px;
+    width: 600px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    opacity: 0.4; /* 淡淡的视觉存在感 */
+    pointer-events: none; /* 穿透点击 */
+}
+
+.fake-line {
+    height: 12px;
+    background: linear-gradient(90deg, var(--border-color) 20%, #3a7bd5 50%, var(--border-color) 80%);
+    background-size: 200% 100%;
+    animation: flow 3s infinite linear;
+    border-radius: 4px;
+}
+
+@keyframes flow {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.question-input:focus, .question-input:hover {
+    border: 1px solid #3a7bd5;
+    box-shadow: 0 0 15px rgba(58, 123, 213, 0.4);
+}
+
+.submit-button, .download-button {
+    padding: 16px 30px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
     border-radius: 50px;
-    font-size: 14px;
-    box-shadow: 0 2px 8px 1px rgba(64,60,67,.24)
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .submit-button {
     background-color: #000000;
     color: white;
-    padding: 10px 15px;
-    margin-left: 10px;
-    border: none;
-    font-size: 14px;
-    border-radius: 20px;
-    cursor: pointer;
 }
-
+.submit-button:hover:not(:disabled) {
+    background-color: var(--btn-hover-bg);
+    color: var(--btn-hover-text);
+}
 .submit-button:disabled {
-    background-color: #ccc;
+    background-color: var(--btn-disabled-bg);
     cursor: not-allowed;
-}
-
-.input-container{
-    width: 100%
-}
-
-.response-container {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-left: 5px solid #007bff;
-    text-align: left;
-}
-
-.response-title {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.response-text {
-    font-size: 16px;
-    color: #333;
-    white-space: pre-wrap;
 }
 
 .download-button {
     background-color: #2964aa;
     color: white;
-    padding: 10px 15px;
-    margin-left: 10px;
-    border: none;
-    border-radius: 20px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: background 0.3s ease;
 }
-
-.download-button:hover {
+.download-button:hover:not(:disabled) {
     background-color: #e3e3e3;
-    color: #000000
+    color: #000000;
+}
+.download-button:disabled {
+    background-color: var(--btn-disabled-bg);
+    cursor: not-allowed;
 }
 
-.download-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+.error {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* =========================================
+   6. Markdown 渲染微调与 Mac 果味滚动条
+========================================= */
+
+.response-text h1 { font-size: 22px; margin-top: 30px; margin-bottom: 15px; color: var(--text-main); }
+.response-text h2 { font-size: 18px; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; color: var(--text-main); }
+.response-text h3 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; color: #8bb4e7; }
+.response-text table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+.response-text th, .response-text td { border: 1px solid var(--border-color); padding: 12px; text-align: left; }
+.response-text th { background-color: var(--border-color); font-weight: bold; white-space: nowrap; }
+
+/* 滚动条机制：同时应用给侧边栏和主回答区 */
+.response-container::-webkit-scrollbar,
+.history-list::-webkit-scrollbar {
+    width: 6px; 
+}
+.response-container::-webkit-scrollbar-track,
+.history-list::-webkit-scrollbar-track {
+    background: transparent; 
+}
+.response-container::-webkit-scrollbar-thumb,
+.history-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15); 
+    border-radius: 10px; 
+}
+.response-container::-webkit-scrollbar-thumb:hover,
+.history-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35); 
+}
+
+/* =========================================
+   7. AI 思考状态动画 (赛博光标)
+========================================= */
+
+.loading-cursor-container,
+.response-text {
+    padding-top: 80px; /* 你想往下移多少，就在这里统一改 */
+}
+
+.loading-cursor-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #afc0d9; /* 主题蓝 */
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+/* 绘制一个极客风的方块光标 */
+.loading-cursor {
+    width: 14px;
+    height: 18px;
+    background-color: #a4b7d3;
+    box-shadow: 0 0 8px #6993cd;
+    /* 核心动画：模拟终端光标的生硬闪烁 */
+    animation: blink 1s step-end infinite; 
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }

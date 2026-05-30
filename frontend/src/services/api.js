@@ -1,19 +1,34 @@
 import axios from "axios";
 
 
-export const solveQuestion = async (question) => {
-
+export const solveQuestion = async (question, onChunk) => {
     const API_URL = "http://127.0.0.1:8000/api/solve/";
+
     try {
-        const response = await axios.post(
-            API_URL,
-            { question },  // ✅ Correct JSON format
-            { headers: { "Content-Type": "application/json" } }  // ✅ Ensure JSON request
-        );
-        return response.data;
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question })
+        });
+
+        if (!response.ok) return { error: "HTTP error" };
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let fullText = "";
+
+        // 真正的流式读取：只要有数据就读，读到一个字就通过 onChunk 传给组件
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            fullText += decoder.decode(value, { stream: true });
+            if (onChunk) onChunk(fullText); // 实时抛出文字
+        }
+        
+        return { response: fullText };
     } catch (error) {
-        console.error("Error:", error.response?.data || error.message);
-        return { error: "Failed to get a response from the server." };
+        return { error: "Failed to connect to the server." };
     }
 };
 

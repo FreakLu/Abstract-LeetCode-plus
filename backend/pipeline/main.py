@@ -1,7 +1,6 @@
 from pipeline.llm_client import LeetCodeAgent
 from pipeline.parse_response_to_csv import extract_table, parse_table_to_xlsx
 
-
 def solve_questions():
     agent = LeetCodeAgent(model="gpt-4")
 
@@ -9,7 +8,7 @@ def solve_questions():
         user_input = input("\nAsk a question about a LeetCode problem (or type 'exit' to quit): ")
         if user_input.lower() == "exit":
             break
-        response = agent.generate_solution(user_input)
+        response = agent.stream_solution(user_input)
         print("\nResponse:\n", response)
         if response:
             # Extract table and convert to Excel with Cambria font and Markdown conversion
