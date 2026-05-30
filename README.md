@@ -1,4 +1,4 @@
-# Abstract-LeetCode
+# Abstract-LeetCode-Plus
 
 [English](#english-version) | [简体中文](#中文版本)
 
@@ -6,7 +6,9 @@
 
 ## English Version
 
-![](abstract.png)
+![](pic/main.gif)
+
+![](pic/use1.gif)
 
 ABSTRACT is an intelligent study and review tool designed specifically for mastering LeetCode questions. It helps users organize, summarize, and retain key problem-solving patterns efficiently. With structured note-taking, spaced repetition, and AI-powered insights, ABSTRACT makes coding interview preparation faster and more effective.
 
@@ -16,7 +18,7 @@ ABSTRACT is an intelligent study and review tool designed specifically for maste
 
 ### Table of Contents
 
-- [Abstract-LeetCode](#abstract-leetcode)
+- [Abstract-LeetCode-Plus](#abstract-leetcode-plus)
   - [English Version](#english-version)
     - [Table of Contents](#table-of-contents)
     - [Project Architecture](#project-architecture)
@@ -95,7 +97,7 @@ ABSTRACT 是一款专为刷 LeetCode 打造的智能学习与复习辅助工具�
 
 ### Table of Contents / 目录
 
-- [Abstract-LeetCode](#abstract-leetcode)
+- [Abstract-LeetCode-Plus](#abstract-leetcode-plus)
   - [English Version](#english-version)
     - [Table of Contents](#table-of-contents)
     - [Project Architecture](#project-architecture)
