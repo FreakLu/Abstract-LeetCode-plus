@@ -268,8 +268,59 @@
     width: 100%;
 }
 
+.input-field-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 250px;
+}
+
+.animated-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 25px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    max-width: calc(100% - 50px);
+    color: var(--text-muted);
+    text-shadow:
+        0 0 4px rgba(255, 255, 255, 0.4),
+        0 0 10px rgba(58, 123, 213, 0.45);
+    font-size: 16px;
+    opacity: 0.72;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.animated-placeholder span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.placeholder-cursor {
+    width: 2px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background-color: #ffffff;
+    box-shadow:
+        0 0 4px #ffffff,
+        0 0 10px #3a7bd5,
+        0 0 18px rgba(58, 123, 213, 0.9);
+    animation: placeholderBlink 1s step-end infinite;
+}
+
+@keyframes placeholderBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 .question-input {
     flex: 1;
+    width: 100%;
+    box-sizing: border-box;
     min-width: 250px;
     padding: 16px 25px;
     font-size: 16px;
@@ -448,6 +499,10 @@
     }
 
     .question-form > .input-container > .input-container {
+        min-width: 0;
+    }
+
+    .input-field-wrapper {
         min-width: 0;
     }
 

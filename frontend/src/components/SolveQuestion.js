@@ -69,8 +69,8 @@ const SolveQuestion = () => {
         }
 
         const examples = language === "zh"
-            ? ["Leetcode 20: 有效的括号", "Leetcode 20:", "20"]
-            : ["Leetcode 20: Valid Parentheses", "Leetcode 20:", "20"];
+            ? ["帮我讲一下 Leetcode 20 题", "帮我讲一下 30 题", "第 20 题", "20"]
+            : ["Explain Leetcode 20", "Leetcode 20: Valid Parentheses", "Problem 30", "20"];
         
         const currentExample = examples[loopNum % examples.length];
         const isFull = placeholderText === currentExample;
@@ -79,8 +79,10 @@ const SolveQuestion = () => {
         let typingSpeed = isDeleting ? 40 : 200; 
 
         if (!isDeleting && isFull) {
-            typingSpeed = 3000; 
-            setIsDeleting(true);
+            const timeout = setTimeout(() => {
+                setIsDeleting(true);
+            }, 2400);
+            return () => clearTimeout(timeout);
         } else if (isDeleting && isEmpty) {
             setIsDeleting(false);
             setLoopNum(prev => prev + 1); 
@@ -261,10 +263,16 @@ const SolveQuestion = () => {
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                         </button>
-                        <div className="input-container">
+                        <div className="input-field-wrapper">
+                            {!question && !isFocused && !loading && (
+                                <div className="animated-placeholder" aria-hidden="true">
+                                    <span>{placeholderText}</span>
+                                    <span className="placeholder-cursor"></span>
+                                </div>
+                            )}
                             <input
                                 type="text"
-                                placeholder={isFocused ? "" : placeholderText}
+                                placeholder=""
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}
                                 onFocus={() => {

@@ -230,13 +230,23 @@ class LeetCodeAgent:
         """
         优先从输入中正则匹配完整标题。如果只输入了题号，则通过本地字典补全。
         """
-        # 1. 尝试提取题号 (匹配 "20", "Leetcode 20", "LC20" 等)
-        match = re.search(r"\b(?:Leetcode|LC|Problem)?\s*(\d{1,4})\b", user_input, re.IGNORECASE)
-        if not match:
+        # 1. 尝试提取题号，兼容 "leetcode20题"、"第20题"、"LC20"、"20" 等输入。
+        problem_number = None
+        patterns = [
+            r"(?:leetcode|leet\s*code|lc|problem)\s*#?\s*(\d{1,4})(?:\s*题)?",
+            r"(?:第|题目)\s*(\d{1,4})\s*题?",
+            r"(?<!\d)(\d{1,4})\s*题",
+            r"^\s*(\d{1,4})\s*$",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, user_input, re.IGNORECASE)
+            if match:
+                problem_number = str(int(match.group(1)))
+                break
+
+        if not problem_number:
             return None
-            
-        # 将 "020" 这种输入清洗为 "20"
-        problem_number = str(int(match.group(1))) 
 
         # 2. 尝试从输入中直接提取完整的标题 (应对本地字典中还未收录的新题)
         title_match = re.search(r"(?:Leetcode|LC)?\s*\d{1,4}[:\-\s]+([a-zA-Z\s]+)", user_input, re.IGNORECASE)
