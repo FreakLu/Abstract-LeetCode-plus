@@ -4,10 +4,44 @@ import remarkGfm from "remark-gfm";
 import { solveQuestion, downloadExcel } from "../services/api";
 import "./SolveQuestion.css";
 
+const detectLanguage = () => {
+    const savedLanguage = window.localStorage.getItem("abstractLanguage");
+    if (savedLanguage === "zh" || savedLanguage === "en") return savedLanguage;
+
+    const browserLanguage = navigator.language || navigator.userLanguage || "";
+    return browserLanguage.toLowerCase().startsWith("zh") ? "zh" : "en";
+};
+
+const UI_TEXT = {
+    zh: {
+        thinking: "思考中...",
+        solving: "解析中...",
+        solve: "解析",
+        preparing: "准备中...",
+        download: "下载 Excel",
+        toggleSidebar: "切换侧边栏",
+        languageLabel: "语言",
+        chinese: "中文",
+        english: "EN",
+    },
+    en: {
+        thinking: "thinking...",
+        solving: "Solving...",
+        solve: "Solve",
+        preparing: "Preparing...",
+        download: "Download Excel",
+        toggleSidebar: "Toggle Sidebar",
+        languageLabel: "Language",
+        chinese: "中文",
+        english: "EN",
+    },
+};
+
 const SolveQuestion = () => {
     const [question, setQuestion] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [language, setLanguage] = useState(detectLanguage);
 
     const [history, setHistory] = useState([]);
     const [activeId, setActiveId] = useState(null);
@@ -19,6 +53,12 @@ const SolveQuestion = () => {
     const [loopNum, setLoopNum] = useState(0);
 
     const [isFocused, setIsFocused] = useState(false);
+    const text = UI_TEXT[language];
+
+    useEffect(() => {
+        window.localStorage.setItem("abstractLanguage", language);
+        document.documentElement.lang = language === "zh" ? "zh-CN" : "en";
+    }, [language]);
 
     useEffect(() => {
         if (isFocused || activeId || isSidebarOpen) {
@@ -26,11 +66,9 @@ const SolveQuestion = () => {
             return;
         }
 
-        const examples = [
-            "Leetcode 20: Valid Parentheses",
-            "Leetcode 20:",
-            "20"
-        ];
+        const examples = language === "zh"
+            ? ["Leetcode 20: 有效的括号", "Leetcode 20:", "20"]
+            : ["Leetcode 20: Valid Parentheses", "Leetcode 20:", "20"];
         
         const currentExample = examples[loopNum % examples.length];
         const isFull = placeholderText === currentExample;
@@ -54,7 +92,7 @@ const SolveQuestion = () => {
         }, typingSpeed);
 
         return () => clearTimeout(timeout); 
-    }, [placeholderText, isDeleting, loopNum, activeId, isSidebarOpen, isFocused]);
+    }, [placeholderText, isDeleting, loopNum, activeId, isSidebarOpen, isFocused, language]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -96,7 +134,7 @@ const SolveQuestion = () => {
         setIsSidebarOpen(true);
 
         // 3. 开始网络请求
-        const result = await solveQuestion(currentQuestion, (streamedText) => {
+        const result = await solveQuestion(currentQuestion, language, (streamedText) => {
             // 每收到几个字，就立刻更新到屏幕上
             setHistory(prev => prev.map(item => 
                 item.id === targetId 
@@ -125,6 +163,26 @@ const SolveQuestion = () => {
     // 4. 替换 return 里面的所有内容
     return (
         <div className={`app-wrapper ${activeId ? 'ide-mode' : 'center-mode'}`}>
+            <div className="top-actions" aria-label={text.languageLabel}>
+                <div className="language-switch" role="group" aria-label={text.languageLabel}>
+                    <button
+                        type="button"
+                        className={language === "zh" ? "active" : ""}
+                        onClick={() => setLanguage("zh")}
+                        disabled={loading}
+                    >
+                        {text.chinese}
+                    </button>
+                    <button
+                        type="button"
+                        className={language === "en" ? "active" : ""}
+                        onClick={() => setLanguage("en")}
+                        disabled={loading}
+                    >
+                        {text.english}
+                    </button>
+                </div>
+            </div>
             
             {/* 侧边栏：只有在 ide-mode 才显示 */}
             {isSidebarOpen && (
@@ -167,7 +225,7 @@ const SolveQuestion = () => {
                         {history.find(item => item.id === activeId)?.isLoading ? (
                             <div className="loading-cursor-container">
                                 <div className="loading-cursor"></div>
-                                <span>thinking...</span>
+                                <span>{text.thinking}</span>
                             </div>
                         ) : (
                             <div className="response-text">
@@ -195,7 +253,7 @@ const SolveQuestion = () => {
                         type="button" 
                         className={`sidebar-toggle-btn ${isSidebarOpen ? 'open' : ''}`} 
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        title="Toggle Sidebar"
+                        title={text.toggleSidebar}
                         >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
@@ -221,10 +279,10 @@ const SolveQuestion = () => {
                             />
                         </div>
                         <button type="submit" disabled={loading} className="submit-button">
-                            {loading ? "Solving..." : "Solve"}
+                            {loading ? text.solving : text.solve}
                         </button>
                         <button type="button" className="download-button" onClick={downloadExcel} disabled={loading}>
-                            {loading ? "Preparing..." : "Download Excel"}
+                            {loading ? text.preparing : text.download}
                         </button>
                     </div>
                     {error && <p className="error">{error}</p>}

@@ -1,14 +1,11 @@
-import axios from "axios";
-
-
-export const solveQuestion = async (question, onChunk) => {
+export const solveQuestion = async (question, language, onChunk) => {
     const API_URL = "http://127.0.0.1:8000/api/solve/";
 
     try {
         const response = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
+            body: JSON.stringify({ question, language })
         });
 
         if (!response.ok) return { error: "HTTP error" };

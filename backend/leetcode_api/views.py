@@ -33,7 +33,7 @@ def solve_question_api(request):
 
     try:
         llm_client = create_llm_client(provider=provider)
-        sys_language = os.getenv("APP_LANGUAGE", "zh").lower()
+        sys_language = (request.data.get("language") or os.getenv("APP_LANGUAGE", "zh")).lower()
         agent = LeetCodeAgent(client=llm_client, model=model_name, language=sys_language)
         response = agent.generate_solution(user_input)
     except ValueError as e:

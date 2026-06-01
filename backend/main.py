@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import os
 import re
 import asyncio
+from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -35,6 +36,7 @@ app.add_middleware(
 # 1. 定义前端传过来的数据结构
 class QuestionRequest(BaseModel):
     question: str
+    language: Optional[str] = None
 
 def sanitize_question(raw_input: str) -> str:
     """
@@ -56,7 +58,7 @@ async def solve_question_api(request: QuestionRequest):
     provider = resolve_llm_provider()
     model_name = resolve_llm_model(provider)
     llm_client = create_llm_client(provider=provider)
-    agent = LeetCodeAgent(client=llm_client, model=model_name, language=None)
+    agent = LeetCodeAgent(client=llm_client, model=model_name, language=request.language)
 
     async def generate():
         full_response_buffer = []
