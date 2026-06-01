@@ -52,6 +52,8 @@ const SolveQuestion = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
 
+    const isAnswerView = Boolean(activeId);
+
     const [isFocused, setIsFocused] = useState(false);
     const text = UI_TEXT[language];
 
@@ -61,7 +63,7 @@ const SolveQuestion = () => {
     }, [language]);
 
     useEffect(() => {
-        if (isFocused || activeId || isSidebarOpen) {
+        if (isFocused || isAnswerView) {
             setPlaceholderText("");
             return;
         }
@@ -92,7 +94,7 @@ const SolveQuestion = () => {
         }, typingSpeed);
 
         return () => clearTimeout(timeout); 
-    }, [placeholderText, isDeleting, loopNum, activeId, isSidebarOpen, isFocused, language]);
+    }, [placeholderText, isDeleting, loopNum, isAnswerView, isFocused, language]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -184,13 +186,13 @@ const SolveQuestion = () => {
                 </div>
             </div>
             
-            {/* 侧边栏：只有在 ide-mode 才显示 */}
             {isSidebarOpen && (
                 <aside className="sidebar">
-                    {/* 标题变为返回主页的按钮 */}
-                    <h2 className="sidebar-title" onClick={() => setActiveId(null)}>
-                        Abstract LeetCode Plus +
-                    </h2>
+                    {isAnswerView && (
+                        <h2 className="sidebar-title" onClick={() => setActiveId(null)}>
+                            Abstract LeetCode Plus +
+                        </h2>
+                    )}
                     <div className="history-list">
                         {history.map(item => (
                             <div 
@@ -212,8 +214,8 @@ const SolveQuestion = () => {
     
                 {/* 只有在 center-mode 才显示大标题 */}
                 
-                {!activeId && (
-                <h2 className={`main-title ${isSidebarOpen ? 'hidden' : ''}`}>
+                {!isAnswerView && (
+                <h2 className={`main-title`}>
                     Abstract LeetCode Plus +
                 </h2>
                 )}
