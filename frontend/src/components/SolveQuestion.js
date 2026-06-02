@@ -37,6 +37,38 @@ const UI_TEXT = {
     },
 };
 
+const cleanDisplayBreaks = (text, replacement = " ") => (
+    text.replace(/<br\s*\/?>/gi, replacement)
+);
+
+const cleanDisplayTags = (text) => {
+    const trimmed = text.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+        return text.replace(trimmed, trimmed.slice(1, -1).trim());
+    }
+    return text;
+};
+
+const formatDisplayMarkdown = (markdown = "") => (
+    markdown.split("\n").map((line) => {
+        if (!line.trim().startsWith("|")) {
+            return cleanDisplayBreaks(line, "\n");
+        }
+
+        const parts = line.split("|");
+        if (parts.length < 8) {
+            return cleanDisplayBreaks(line, " ");
+        }
+
+        const cells = parts.slice(1, -1).map((cell) => cleanDisplayBreaks(cell, " "));
+        if (cells.length >= 6) {
+            cells[3] = cleanDisplayTags(cells[3]);
+        }
+
+        return `|${cells.join("|")}|`;
+    }).join("\n")
+);
+
 const SolveQuestion = () => {
     const [question, setQuestion] = useState("");
     const [loading, setLoading] = useState(false);
@@ -111,7 +143,7 @@ const SolveQuestion = () => {
         setQuestion(""); 
 
         // 1. 查重逻辑：寻找是否已经搜过这个相同的词（忽略大小写）
-        const existingRecord = history.find(item => item.title.toLowerCase() === currentQuestion.toLowerCase());
+        const existingRecord = history.find(item => item.title.toLowerCase() === displayTitle.toLowerCase());
         let targetId;
 
         if (existingRecord) {
@@ -234,7 +266,7 @@ const SolveQuestion = () => {
                         ) : (
                             <div className="response-text">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {history.find(item => item.id === activeId)?.content || ""}
+                                    {formatDisplayMarkdown(history.find(item => item.id === activeId)?.content || "")}
                                 </ReactMarkdown>
                             </div>
                         )}
