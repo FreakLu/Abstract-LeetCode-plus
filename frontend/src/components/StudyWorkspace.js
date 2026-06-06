@@ -111,6 +111,7 @@ const StudyWorkspace = () => {
         setIsReviewOpen((isOpen) => {
             if (!isOpen) {
                 setActiveId(null);
+                setIsSidebarOpen(false);
             }
             return !isOpen;
         });
@@ -124,26 +125,28 @@ const StudyWorkspace = () => {
 
     return (
         <div className={`app-wrapper ${modeClass}`}>
-            <div className="top-actions" aria-label={text.languageLabel}>
-                <div className="language-switch" role="group" aria-label={text.languageLabel}>
-                    <button
-                        type="button"
-                        className={language === "zh" ? "active" : ""}
-                        onClick={() => setLanguage("zh")}
-                        disabled={loading}
-                    >
-                        {text.chinese}
-                    </button>
-                    <button
-                        type="button"
-                        className={language === "en" ? "active" : ""}
-                        onClick={() => setLanguage("en")}
-                        disabled={loading}
-                    >
-                        {text.english}
-                    </button>
+            {!isReviewOpen && (
+                <div className="top-actions" aria-label={text.languageLabel}>
+                    <div className="language-switch" role="group" aria-label={text.languageLabel}>
+                        <button
+                            type="button"
+                            className={language === "zh" ? "active" : ""}
+                            onClick={() => setLanguage("zh")}
+                            disabled={loading}
+                        >
+                            {text.chinese}
+                        </button>
+                        <button
+                            type="button"
+                            className={language === "en" ? "active" : ""}
+                            onClick={() => setLanguage("en")}
+                            disabled={loading}
+                        >
+                            {text.english}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {isSidebarOpen && !isReviewOpen && (
                 <aside className="sidebar">
@@ -187,21 +190,25 @@ const StudyWorkspace = () => {
                     </div>
                 )}
 
-                {isReviewOpen && <ReviewGallery />}
+                {isReviewOpen && (
+                    <ReviewGallery onClose={() => setIsReviewOpen(false)} />
+                )}
 
-                <QuestionBar
-                    language={language}
-                    loading={loading}
-                    isAnswerView={isAnswerView}
-                    isSidebarOpen={isSidebarOpen}
-                    isReviewOpen={isReviewOpen}
-                    text={text}
-                    error={error}
-                    onSubmit={handleSubmit}
-                    onToggleSidebar={() => setIsSidebarOpen((isOpen) => !isOpen)}
-                    onDownload={downloadExcel}
-                    onToggleReview={handleToggleReview}
-                />
+                {!isReviewOpen && (
+                    <QuestionBar
+                        language={language}
+                        loading={loading}
+                        isAnswerView={isAnswerView}
+                        isSidebarOpen={isSidebarOpen}
+                        isReviewOpen={isReviewOpen}
+                        text={text}
+                        error={error}
+                        onSubmit={handleSubmit}
+                        onToggleSidebar={() => setIsSidebarOpen((isOpen) => !isOpen)}
+                        onDownload={downloadExcel}
+                        onToggleReview={handleToggleReview}
+                    />
+                )}
             </main>
         </div>
     );

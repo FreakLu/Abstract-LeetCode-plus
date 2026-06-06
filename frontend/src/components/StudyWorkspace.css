@@ -96,7 +96,7 @@
 }
 
 .review-mode .main-content {
-    padding: 20px 40px 30px;
+    padding: 0 40px 30px;
     width: 100%;
 }
 
@@ -229,8 +229,7 @@
     flex-shrink: 0;
 }
 
-.ide-mode .question-form,
-.review-mode .question-form {
+.ide-mode .question-form {
     margin-top: auto; 
     padding-bottom: 20px;
 }
