@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import SolveQuestion from "./components/SolveQuestion";
+import StudyWorkspace from "./components/StudyWorkspace";
 import "./App.css";
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
     }, []);
   return (
       <div className="App">
-        <SolveQuestion />
+        <StudyWorkspace />
       </div>
   );
 }

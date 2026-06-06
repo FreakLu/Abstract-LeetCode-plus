@@ -57,3 +57,15 @@ export const downloadExcel = async () => {
         console.error("Error downloading file:", error);
     }
 };
+
+export const getReviewItems = async () => {
+    const API_URL = "http://127.0.0.1:8000/api/review/items";
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+        throw new Error("复习卡片加载失败");
+    }
+
+    const data = await response.json();
+    return data.items || [];
+};
