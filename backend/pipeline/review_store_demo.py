@@ -18,6 +18,7 @@ review_store.py 的 SQLite 操作示例。
 """
 
 import sqlite3
+import json
 from datetime import datetime
 from pprint import pprint
 
@@ -27,9 +28,12 @@ CREATE TABLE IF NOT EXISTS review_items (
     problem_number TEXT PRIMARY KEY,
     problem_title TEXT NOT NULL,
     last_viewed TEXT,
-    tags TEXT,
-    pattern_solution TEXT,
-    when_to_use TEXT,
+
+    tags_json TEXT,
+    pattern TEXT,
+    solution_approach TEXT,
+    use_cases_json TEXT,
+
     mastery_level INTEGER DEFAULT 0,
     mistake_count INTEGER DEFAULT 0,
     status TEXT DEFAULT 'new',
@@ -85,8 +89,9 @@ def main():
     # PRAGMA table_info(...) 不是查询业务数据，而是在问 SQLite：
     # “请告诉我 review_items 这张表有哪些列，每列是什么类型。”
     #
-    # 它返回的 cid/name/type/notnull/default/pk 是 SQLite 的表结构说明：
-    # - cid: column id，列的顺序编号，从 0 开始。它不是我们创建的业务字段。
+    # 它返回的 cid/name/type/notnull/default/pk 是 SQLite 自动给出的表结构说明：
+    # - cid: column id，也就是“这一列在表里的顺序编号”，从 0 开始。
+    #   它不是我们业务里的题目 id，也不是数据库主键。
     # - name: 列名，例如 problem_number。
     # - type: 列类型，例如 TEXT / INTEGER。
     # - notnull: 是否不允许为空。1 表示 NOT NULL，0 表示可以为空。
@@ -118,21 +123,23 @@ def main():
             problem_number,
             problem_title,
             last_viewed,
-            tags,
-            pattern_solution,
-            when_to_use,
+            tags_json,
+            pattern,
+            solution_approach,
+            use_cases_json,
             created_at,
             updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             "20",
             "Valid Parentheses",
             "2026-06-01",
-            "Stack, String",
+            json.dumps(["Stack", "String"]),
+            "Stack matching",
             "Use a stack to match opening and closing brackets.",
-            "Use when the problem needs last-in-first-out matching.",
+            json.dumps(["Use when the problem needs last-in-first-out matching."]),
             now,
             now,
         ),
@@ -146,9 +153,10 @@ def main():
             problem_number,
             problem_title,
             last_viewed,
-            tags,
-            pattern_solution,
-            when_to_use,
+            tags_json,
+            pattern,
+            solution_approach,
+            use_cases_json,
             mastery_level,
             mistake_count,
             status,
@@ -156,15 +164,16 @@ def main():
             created_at,
             updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             "30",
             "Substring with Concatenation of All Words",
             "2026-06-01",
-            "Hash Table, Sliding Window",
+            json.dumps(["Hash Table", "Sliding Window"]),
+            "Sliding window by word length",
             "Use sliding windows grouped by word length.",
-            "Use when matching fixed-length chunks repeatedly.",
+            json.dumps(["Use when matching fixed-length chunks repeatedly."]),
             1,
             3,
             "weak",

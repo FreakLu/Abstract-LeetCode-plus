@@ -15,6 +15,17 @@ from pipeline.review_store import init_review_db, list_review_items, get_review_
 from pipeline.llm_client import LeetCodeAgent, create_llm_client, resolve_llm_model, resolve_llm_provider
 from pipeline.solution_table_exporter import extract_table, parse_table_to_xlsx
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_DIR, ".env")
+if os.path.exists(ENV_PATH):
+    load_dotenv(dotenv_path=ENV_PATH, override=True)
+    print(f"[Debug] Loaded env from: {ENV_PATH}")
+    print(f"[Debug] LLM_PROVIDER: {os.getenv('LLM_PROVIDER')}")
+    print(f"[Debug] LLM_MODEL: {os.getenv('LLM_MODEL')}")
+    print(f"[Debug] APP_LANGUAGE: {os.getenv('APP_LANGUAGE')}")
+else:
+    print("[Info] backend/.env not found. Using the free default LLM provider.")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

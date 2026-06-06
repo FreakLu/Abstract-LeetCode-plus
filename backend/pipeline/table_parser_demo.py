@@ -6,8 +6,8 @@ Run from the backend folder:
     python pipeline/table_parser_demo.py
 
 It shows how LLM markdown table text becomes:
-1. normalized table rows
-2. one review item dict for SQLite
+1. normalized table rows for Excel/export compatibility
+2. one structured review item dict for SQLite and future cards
 """
 
 from pprint import pprint
@@ -39,11 +39,11 @@ def main():
     print_section("1. 原始 Markdown 表格")
     print(SAMPLE_TABLE.strip())
 
-    print_section("2. parse_markdown_table_rows(...) 的结果")
+    print_section("2. parse_markdown_table_rows(...) 的结果：兼容 Excel 的六列表格行")
     rows = parse_markdown_table_rows(SAMPLE_TABLE)
     pprint(rows)
 
-    print_section("3. parse_review_item_from_table(...) 的结果")
+    print_section("3. parse_review_item_from_table(...) 的结果：复习卡片需要的结构化数据")
     item = parse_review_item_from_table(SAMPLE_TABLE)
     pprint(item)
 
