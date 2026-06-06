@@ -15,7 +15,6 @@ const QuestionBar = ({
     error,
     onSubmit,
     onToggleSidebar,
-    onDownload,
     onToggleReview,
 }) => {
     const [question, setQuestion] = useState("");
@@ -106,9 +105,6 @@ const QuestionBar = ({
 
                 <button type="submit" disabled={loading} className="submit-button">
                     {loading ? text.solving : text.solve}
-                </button>
-                <button type="button" className="download-button" onClick={onDownload} disabled={loading}>
-                    {loading ? text.preparing : text.download}
                 </button>
                 <button
                     type="button"

@@ -21,6 +21,7 @@ from pipeline.review_store import (
     get_review_item,
     parse_review_item_from_table,
     save_review_item,
+    update_mastery_level,
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -55,6 +56,9 @@ app.add_middleware(
 class QuestionRequest(BaseModel):
     question: str
     language: Optional[str] = None
+
+class MasteryUpdateRequest(BaseModel):
+    mastery_level: int
 
 def sanitize_question(raw_input: str) -> str:
     """
@@ -137,4 +141,21 @@ async def get_review_item_api(problem_number: str):
     item = get_review_item(problem_number)
     if not item:
         raise HTTPException(status_code=404, detail="Review item not found")
+    return item
+
+
+@app.patch("/api/review/items/{problem_number}/mastery")
+async def update_mastery_level_api(problem_number: str, request: MasteryUpdateRequest):
+    try:
+        item = update_mastery_level(problem_number, request.mastery_level)
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Review item not found")
+
+    print(
+        f"[Review Store] Updated mastery level: "
+        f"LeetCode {problem_number} -> {request.mastery_level}"
+    )
     return item

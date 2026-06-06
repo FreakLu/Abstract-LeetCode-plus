@@ -69,3 +69,18 @@ export const getReviewItems = async () => {
     const data = await response.json();
     return data.items || [];
 };
+
+export const updateReviewMastery = async (problemNumber, masteryLevel) => {
+    const API_URL = `http://127.0.0.1:8000/api/review/items/${problemNumber}/mastery`;
+    const response = await fetch(API_URL, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mastery_level: masteryLevel }),
+    });
+
+    if (!response.ok) {
+        throw new Error("复习状态保存失败");
+    }
+
+    return response.json();
+};

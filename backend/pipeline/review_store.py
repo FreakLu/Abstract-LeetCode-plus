@@ -138,6 +138,30 @@ def save_review_item(item: Dict) -> Dict:
 
     return get_review_item(str(item["problem_number"]))
 
+def update_mastery_level(problem_number: str, mastery_level: int) -> Optional[Dict]:
+    """更新指定题目的熟练度，并返回更新后的复习记录。"""
+    if mastery_level not in {1, 2, 3}:
+        raise ValueError("mastery_level must be 1, 2, or 3")
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with get_connection() as conn:
+        result = conn.execute(
+            """
+            UPDATE review_items
+            SET mastery_level = ?,
+                updated_at = ?
+            WHERE problem_number = ?
+            """,
+            (mastery_level, now, str(problem_number)),
+        )
+        conn.commit()
+
+    if result.rowcount == 0:
+        return None
+
+    return get_review_item(str(problem_number))
+
 def parse_tags(text: str) -> List[str]:
     """将标签文本拆分为标签列表。"""
     text = text.strip()

@@ -191,7 +191,10 @@ const StudyWorkspace = () => {
                 )}
 
                 {isReviewOpen && (
-                    <ReviewGallery onClose={() => setIsReviewOpen(false)} />
+                    <ReviewGallery
+                        onClose={() => setIsReviewOpen(false)}
+                        onDownload={downloadExcel}
+                    />
                 )}
 
                 {!isReviewOpen && (
@@ -205,7 +208,6 @@ const StudyWorkspace = () => {
                         error={error}
                         onSubmit={handleSubmit}
                         onToggleSidebar={() => setIsSidebarOpen((isOpen) => !isOpen)}
-                        onDownload={downloadExcel}
                         onToggleReview={handleToggleReview}
                     />
                 )}

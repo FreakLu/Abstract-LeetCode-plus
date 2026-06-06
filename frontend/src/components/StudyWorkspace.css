@@ -342,7 +342,6 @@
 }
 
 .submit-button,
-.download-button,
 .review-button {
     padding: 16px 30px;
     border: none;
@@ -363,19 +362,6 @@
     color: var(--btn-hover-text);
 }
 .submit-button:disabled {
-    background-color: var(--btn-disabled-bg);
-    cursor: not-allowed;
-}
-
-.download-button {
-    background-color: #2964aa;
-    color: white;
-}
-.download-button:hover:not(:disabled) {
-    background-color: #e3e3e3;
-    color: #000000;
-}
-.download-button:disabled {
     background-color: var(--btn-disabled-bg);
     cursor: not-allowed;
 }
@@ -561,7 +547,6 @@
     }
 
     .submit-button,
-    .download-button,
     .review-button {
         width: 100%;
         min-width: 0;
