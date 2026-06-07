@@ -1,6 +1,6 @@
 # Abstract-LeetCode-Plus
 
-![V1.1 dark theme available/深色模式支持](pic/dark_theme.png)
+![V1.1 dark theme available/深色模式支持](pic/main.png)
 
 [Getting Started /快速开始](#getting-started--快速开始)
 
