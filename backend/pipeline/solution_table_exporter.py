@@ -1,10 +1,6 @@
 import re
 import os
-import pandas as pd
 from datetime import datetime
-from openpyxl import load_workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Alignment, Font
 
 def extract_table(text):
     """
@@ -33,10 +29,49 @@ def clean_markdown(text):
     """
     text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)  # Bold
     text = re.sub(r"\*(.*?)\*", r"\1", text)  # Italics
-    text = text.replace("<br>", "\n")  # Replace <br> with newlines
+    text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)  # Replace <br>, <br/>, <BR /> with newlines
     text = re.sub(r"^\s*- ", "• ", text, flags=re.MULTILINE)  # Bullet points
-    text = re.sub(r"^\s*\d+\.", lambda m: f"{m.group(0)} ", text, flags=re.MULTILINE)  # Numbered lists
+    text = re.sub(r"^\s*(\d+)\.\s*", r"\1. ", text, flags=re.MULTILINE)  # Numbered lists
+    text = "\n".join(line.strip() for line in text.splitlines())
     return text.strip()
+
+
+def clean_tags(text):
+    """
+    Cleans only the tag column. Some models return tags like
+    "{Sliding Window, Hash Map}", but braces may be meaningful in solution text,
+    so we remove them only here.
+    """
+    text = clean_markdown(text).strip()
+    if text.startswith("{") and text.endswith("}"):
+        text = text[1:-1].strip()
+    return text
+
+def parse_markdown_table_rows(table_text):
+    rows = []
+    if not table_text:
+        return rows
+    
+    for line in table_text.splitlines():
+        line = line.strip()
+        if not line.startswith("|"):
+            continue
+        columns = [clean_markdown(col.strip()) for col in line.split("|")[1:-1]]
+        if not columns:
+            continue
+
+        first_col = columns[0].strip().lower()
+
+        if first_col in {"dummy", "no.", "no", "题号"}:
+            continue
+        if all(re.fullmatch(r":?-+:?", col.strip()) for col in columns):
+            continue
+        if len(columns) >= 6:
+            columns[3] = clean_tags(columns[3])
+            rows.append(columns[:6])
+    return rows
+
+        
 
 
 def parse_table_to_xlsx(table_text, output_xlsx="./data/leetcode_solutions.xlsx"):
@@ -46,16 +81,19 @@ def parse_table_to_xlsx(table_text, output_xlsx="./data/leetcode_solutions.xlsx"
     ✅ Appends new data if it does not exist
     ✅ Maintains formatting with Cambria font & text wrapping
     """
+    import pandas as pd
+    from openpyxl import load_workbook
+    from openpyxl.styles import Alignment, Font
+    from openpyxl.utils import get_column_letter
+
     headers = ["No.", "Name", "Last Viewed", "Tag", "Problem Pattern/Solution", "When to Use/Scale"]
     today_date = datetime.today().strftime('%Y-%m-%d')
 
-    # Process new data
-    lines = table_text.split("\n")[1:]  # Skip the header and separator line
-    new_data = []
-    for line in lines:
-        columns = line.split("|")[1:-1]  # Remove leading and trailing '|'
-        columns = [clean_markdown(col.strip()) for col in columns]  # Clean Markdown
-        new_data.append(columns)
+    # Process new data using the shared markdown table parser.
+    new_data = parse_markdown_table_rows(table_text)
+    if not new_data:
+        print("No valid table rows found.")
+        return
 
     # Load existing Excel data (if file exists)
     if os.path.exists(output_xlsx):

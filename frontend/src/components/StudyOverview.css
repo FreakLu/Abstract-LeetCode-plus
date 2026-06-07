@@ -1,0 +1,597 @@
+.study-overview {
+    position: relative;
+    width: min(1180px, 100%);
+    margin-top: 34px;
+}
+
+.study-overview-eyebrow {
+    color: #8bb4e7;
+    font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* 首次使用时，计划设置是页面中央的主要引导 */
+.study-plan-onboarding {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 20;
+    width: min(560px, calc(100% - 32px));
+    margin: 0;
+    padding: 28px 32px;
+    border-radius: 20px;
+    background: var(--card-bg);
+    box-shadow: 0 20px 70px rgba(0, 0, 0, 0.42);
+    transform: translate(-50%, -42%);
+    box-sizing: border-box;
+}
+
+.study-plan-onboarding::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-color: rgba(9, 11, 20, 0.48);
+    backdrop-filter: blur(4px);
+}
+
+.study-plan-onboarding .study-plan-form h3 {
+    font-size: 22px;
+}
+
+.study-plan-onboarding .study-plan-form button {
+    padding: 12px 18px;
+    font-size: 14px;
+}
+
+/* 学习计划只作为右上角轻量入口存在 */
+.study-plan-control {
+    position: absolute;
+    top: 0;
+    right: max(0px, calc((100% - 1040px) / 2));
+    z-index: 15;
+}
+
+.study-plan-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0 13px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background-color: var(--card-bg);
+    color: #8bb4e7;
+    cursor: pointer;
+    transition: width 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.study-plan-trigger > span:last-child {
+    width: 0;
+    margin-left: 0;
+    overflow: hidden;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    opacity: 0;
+    transition: width 0.25s ease, margin-left 0.25s ease, opacity 0.2s ease;
+}
+
+.study-plan-trigger:hover,
+.study-plan-trigger:focus-visible {
+    width: 250px;
+    border-color: #3a7bd5;
+    background-color: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(58, 123, 213, 0.16);
+}
+
+.study-plan-trigger:hover > span:last-child,
+.study-plan-trigger:focus-visible > span:last-child {
+    width: 198px;
+    margin-left: 8px;
+    opacity: 1;
+}
+
+.study-plan-trigger-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+}
+
+.study-plan-popover {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    width: 290px;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background-color: var(--card-bg);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+}
+
+.study-plan-status {
+    position: absolute;
+    top: 58px;
+    right: 0;
+    display: grid;
+    gap: 7px;
+    min-width: 250px;
+    text-align: right;
+}
+
+.study-plan-status span,
+.study-plan-status p {
+    margin: 0;
+    color: var(--text-muted);
+}
+
+.study-plan-status span {
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.study-plan-status strong {
+    color: var(--text-main);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.study-plan-status p {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.next-problem-recommendation {
+    position: absolute;
+    top: 168px;
+    right: 0;
+    display: grid;
+    gap: 8px;
+    min-width: 240px;
+    text-align: right;
+}
+
+.next-problem-recommendation > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+    color: #ffd54a;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.next-problem-recommendation > span::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #ffd54a;
+    box-shadow: 0 0 10px rgba(255, 213, 74, 0.72);
+}
+
+.next-problem-recommendation > strong {
+    color: #ffdc57;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(255, 213, 74, 0.3);
+}
+
+.next-problem-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 4px;
+}
+
+.next-problem-actions button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.next-problem-actions svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.next-problem-actions button:hover,
+.next-problem-actions button:focus-visible {
+    border-color: #3a7bd5;
+    color: #8bb4e7;
+    transform: scale(1.14);
+}
+
+.recommendation-action::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 50%;
+    top: calc(100% + 8px);
+    padding: 4px 7px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--text-main);
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(50%) translateY(-3px);
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.recommendation-action:hover::after,
+.recommendation-action:focus-visible::after {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+}
+
+.study-plan-brief {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.study-plan-brief span,
+.study-plan-brief p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.study-plan-brief strong {
+    color: var(--text-main);
+    font-size: 22px;
+}
+
+.study-plan-form {
+    display: grid;
+    gap: 13px;
+}
+
+.study-plan-form h3 {
+    margin: 5px 0 0;
+    color: var(--text-main);
+    font-size: 17px;
+}
+
+.study-plan-form label {
+    display: grid;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.study-plan-form input,
+.study-plan-form select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    outline: none;
+    background-color: transparent;
+    color: var(--text-main);
+    box-sizing: border-box;
+}
+
+.study-plan-date-selects {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr 1fr;
+    gap: 8px;
+}
+
+.study-plan-form button {
+    padding: 9px 14px;
+    border: 1px solid #3a7bd5;
+    border-radius: 999px;
+    background-color: rgba(58, 123, 213, 0.14);
+    color: #8bb4e7;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 活跃度是主页的无边框主体 */
+.activity-panel {
+    width: min(1000px, 100%);
+    margin: 0 auto;
+}
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-right: 62px;
+    padding-left: 90px;
+}
+
+.activity-heading-top {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.activity-header h3 {
+    margin: 5px 0 0;
+    color: var(--text-main);
+    font-size: 18px;
+}
+
+.activity-month-summary {
+    display: flex;
+    gap: 8px;
+    margin: 7px 0 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.activity-month-summary span {
+    opacity: 0.55;
+}
+
+.activity-view-switch {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+}
+
+.activity-view-switch button {
+    width: 72px;
+    height: 26px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.activity-view-switch button.active {
+    background-color: #3a7bd5;
+    color: #ffffff;
+}
+
+.activity-month-grid,
+.activity-year-months {
+    height: 410px;
+    box-sizing: border-box;
+}
+
+.activity-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 52px);
+    grid-auto-rows: 52px;
+    justify-content: center;
+    align-content: center;
+    column-gap: 50px;
+    row-gap: 18px;
+}
+
+.activity-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgba(220, 226, 238, 0.16);
+    border-radius: 10px;
+    background-color: var(--border-color);
+    box-shadow:
+        0 0 7px rgba(255, 255, 255, 0.08),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+    box-sizing: border-box;
+    transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.activity-cell:not(.outside-month):not(.compact):hover {
+    transform: scale(1.16);
+    border-color: rgba(220, 226, 238, 0.38);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.18);
+}
+
+.activity-day-number {
+    color: rgba(220, 226, 238, 0.68);
+    font-size: 11px;
+    font-weight: 700;
+    transition: opacity 0.14s ease;
+}
+
+.activity-day-detail {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    opacity: 0;
+    transition: opacity 0.14s ease;
+}
+
+.activity-cell:not(.outside-month):hover .activity-day-number {
+    opacity: 0;
+}
+
+.activity-cell:not(.outside-month):hover .activity-day-detail {
+    opacity: 1;
+}
+
+.activity-cell.compact {
+    width: 8px;
+    height: 8px;
+    border: 0;
+    border-radius: 2px;
+    box-shadow: none;
+}
+
+.activity-cell.outside-month {
+    border-color: rgba(220, 226, 238, 0.04);
+    background-color: rgba(8, 10, 18, 0.48);
+    box-shadow: none;
+}
+
+.activity-cell.outside-month .activity-day-number {
+    color: rgba(220, 226, 238, 0.2);
+}
+
+.activity-cell.level-1 { background-color: rgba(58, 123, 213, 0.34); }
+.activity-cell.level-2 { background-color: rgba(58, 123, 213, 0.56); }
+.activity-cell.level-3 { background-color: rgba(58, 123, 213, 0.76); }
+.activity-cell.level-4 { background-color: #3a7bd5; box-shadow: 0 0 8px rgba(58, 123, 213, 0.36); }
+
+@media (prefers-color-scheme: light) {
+    .activity-cell {
+        border-color: rgba(66, 84, 112, 0.2);
+        box-shadow:
+            0 0 7px rgba(58, 75, 103, 0.08),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.36);
+    }
+
+    .activity-day-number {
+        color: rgba(39, 52, 76, 0.78);
+    }
+
+    .activity-day-detail {
+        color: #24334d;
+    }
+
+    .activity-cell.level-2 .activity-day-detail,
+    .activity-cell.level-3 .activity-day-detail,
+    .activity-cell.level-4 .activity-day-detail {
+        color: #ffffff;
+    }
+
+    .activity-cell.outside-month {
+        border-color: rgba(66, 84, 112, 0.08);
+        background-color: rgba(196, 203, 216, 0.42);
+    }
+
+    .activity-cell.outside-month .activity-day-number {
+        color: rgba(66, 84, 112, 0.34);
+    }
+
+    .activity-year-month > span {
+        color: #4b5870;
+    }
+}
+
+.activity-year-months {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+    gap: 16px 20px;
+    align-content: center;
+}
+
+.activity-year-month {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    align-items: start;
+    gap: 8px;
+}
+
+.activity-year-month > span {
+    padding-top: 1px;
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.activity-year-month > div {
+    display: grid;
+    grid-template-columns: repeat(7, 8px);
+    grid-auto-rows: 8px;
+    gap: 3px;
+}
+
+.study-overview-error {
+    margin: 14px 0 0;
+    color: #ff6b6b;
+    font-size: 12px;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .activity-year-months {
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 720px) {
+    .study-overview {
+        margin-top: 30px;
+    }
+
+    .study-plan-onboarding {
+        padding: 22px 20px;
+        transform: translate(-50%, -46%);
+    }
+
+    .study-plan-control {
+        position: relative;
+        top: auto;
+        right: auto;
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 18px;
+    }
+
+    .study-plan-popover {
+        top: 50px;
+        left: auto;
+        right: 0;
+    }
+
+    .activity-header {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .activity-year-months {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+    }
+
+    .activity-month-grid {
+        justify-content: center;
+        padding-left: 0;
+        transform: scale(0.82);
+        column-gap: 24px;
+    }
+}
