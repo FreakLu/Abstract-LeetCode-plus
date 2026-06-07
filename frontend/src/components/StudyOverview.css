@@ -6,8 +6,9 @@
 
 .study-overview-eyebrow {
     color: #8bb4e7;
+    font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, monospace;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
