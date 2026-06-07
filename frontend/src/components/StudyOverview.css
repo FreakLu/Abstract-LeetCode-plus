@@ -475,6 +475,42 @@
 .activity-cell.level-3 { background-color: rgba(58, 123, 213, 0.76); }
 .activity-cell.level-4 { background-color: #3a7bd5; box-shadow: 0 0 8px rgba(58, 123, 213, 0.36); }
 
+@media (prefers-color-scheme: light) {
+    .activity-cell {
+        border-color: rgba(66, 84, 112, 0.2);
+        box-shadow:
+            0 0 7px rgba(58, 75, 103, 0.08),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.36);
+    }
+
+    .activity-day-number {
+        color: rgba(39, 52, 76, 0.78);
+    }
+
+    .activity-day-detail {
+        color: #24334d;
+    }
+
+    .activity-cell.level-2 .activity-day-detail,
+    .activity-cell.level-3 .activity-day-detail,
+    .activity-cell.level-4 .activity-day-detail {
+        color: #ffffff;
+    }
+
+    .activity-cell.outside-month {
+        border-color: rgba(66, 84, 112, 0.08);
+        background-color: rgba(196, 203, 216, 0.42);
+    }
+
+    .activity-cell.outside-month .activity-day-number {
+        color: rgba(66, 84, 112, 0.34);
+    }
+
+    .activity-year-month > span {
+        color: #4b5870;
+    }
+}
+
 .activity-year-months {
     display: grid;
     grid-template-columns: repeat(4, minmax(120px, 1fr));
