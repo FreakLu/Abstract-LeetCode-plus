@@ -3,6 +3,7 @@ import { downloadExcel, solveQuestion } from "../services/api";
 import AnswerView from "./AnswerView";
 import QuestionBar from "./QuestionBar";
 import ReviewGallery from "./ReviewGallery";
+import StudyOverview from "./StudyOverview";
 import "./StudyWorkspace.css";
 
 const detectLanguage = () => {
@@ -43,7 +44,7 @@ const UI_TEXT = {
 const StudyWorkspace = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [language, setLanguage] = useState(detectLanguage);
+    const [language] = useState(detectLanguage);
     const [history, setHistory] = useState([]);
     const [activeId, setActiveId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -125,29 +126,6 @@ const StudyWorkspace = () => {
 
     return (
         <div className={`app-wrapper ${modeClass}`}>
-            {!isReviewOpen && (
-                <div className="top-actions" aria-label={text.languageLabel}>
-                    <div className="language-switch" role="group" aria-label={text.languageLabel}>
-                        <button
-                            type="button"
-                            className={language === "zh" ? "active" : ""}
-                            onClick={() => setLanguage("zh")}
-                            disabled={loading}
-                        >
-                            {text.chinese}
-                        </button>
-                        <button
-                            type="button"
-                            className={language === "en" ? "active" : ""}
-                            onClick={() => setLanguage("en")}
-                            disabled={loading}
-                        >
-                            {text.english}
-                        </button>
-                    </div>
-                </div>
-            )}
-
             {isSidebarOpen && !isReviewOpen && (
                 <aside className="sidebar">
                     {isAnswerView && (
@@ -174,6 +152,21 @@ const StudyWorkspace = () => {
                     <h2 className="main-title">Abstract LeetCode Plus +</h2>
                 )}
 
+                {!isAnswerView && !isReviewOpen && (
+                    <QuestionBar
+                        language={language}
+                        loading={loading}
+                        isAnswerView={false}
+                        isSidebarOpen={isSidebarOpen}
+                        isReviewOpen={false}
+                        text={text}
+                        error={error}
+                        onSubmit={handleSubmit}
+                        onToggleSidebar={() => setIsSidebarOpen((isOpen) => !isOpen)}
+                        onToggleReview={handleToggleReview}
+                    />
+                )}
+
                 {isAnswerView && !isReviewOpen && (
                     <AnswerView
                         content={activeRecord.content}
@@ -183,11 +176,7 @@ const StudyWorkspace = () => {
                 )}
 
                 {!isAnswerView && !isReviewOpen && (
-                    <div className="virtual-response-preview">
-                        <div className="fake-line" style={{ width: "80%" }}></div>
-                        <div className="fake-line" style={{ width: "100%" }}></div>
-                        <div className="fake-line" style={{ width: "60%" }}></div>
-                    </div>
+                    <StudyOverview />
                 )}
 
                 {isReviewOpen && (
@@ -197,7 +186,7 @@ const StudyWorkspace = () => {
                     />
                 )}
 
-                {!isReviewOpen && (
+                {isAnswerView && !isReviewOpen && (
                     <QuestionBar
                         language={language}
                         loading={loading}

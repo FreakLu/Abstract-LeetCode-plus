@@ -14,6 +14,13 @@ from dotenv import load_dotenv
 from pipeline.llm_client import auto_check_and_update_in_background
 from pipeline.llm_client import LeetCodeAgent, create_llm_client, resolve_llm_model, resolve_llm_provider
 from pipeline.solution_table_exporter import extract_table, parse_table_to_xlsx
+from pipeline.activity_store import get_activity, record_activity
+from pipeline.study_plan_store import (
+    calculate_study_progress,
+    load_problem_sets,
+    load_study_plan,
+    save_study_plan,
+)
 
 from pipeline.review_store import (
     init_review_db,
@@ -59,6 +66,10 @@ class QuestionRequest(BaseModel):
 
 class MasteryUpdateRequest(BaseModel):
     mastery_level: int
+
+class StudyPlanRequest(BaseModel):
+    target_date: str
+    strategy: str
 
 def sanitize_question(raw_input: str) -> str:
     """
@@ -107,6 +118,7 @@ async def solve_question_api(request: QuestionRequest):
                 return
 
             saved_item = save_review_item(review_item)
+            record_activity("solve")
             log_item = {
                 key: value
                 for key, value in saved_item.items()
@@ -158,4 +170,56 @@ async def update_mastery_level_api(problem_number: str, request: MasteryUpdateRe
         f"[Review Store] Updated mastery level: "
         f"LeetCode {problem_number} -> {request.mastery_level}"
     )
+    record_activity("review")
     return item
+
+
+@app.get("/api/review/activity")
+async def get_review_activity_api(
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+):
+    return {
+        "activity": get_activity(
+            start_date=start_date,
+            end_date=end_date,
+        )
+    }
+
+
+@app.get("/api/study-plan/strategies")
+async def get_study_plan_strategies_api():
+    problem_sets = load_problem_sets()
+    return {
+        "strategies": [
+            {
+                "id": strategy_id,
+                "name": strategy.get("name", strategy_id),
+                "description": strategy.get("description", ""),
+            }
+            for strategy_id, strategy in problem_sets.items()
+        ]
+    }
+
+
+@app.get("/api/study-plan")
+async def get_study_plan_api():
+    plan = load_study_plan()
+    return {
+        "plan": calculate_study_progress(plan) if plan else None
+    }
+
+
+@app.put("/api/study-plan")
+async def save_study_plan_api(request: StudyPlanRequest):
+    try:
+        plan = save_study_plan(
+            target_date=request.target_date,
+            strategy=request.strategy,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error))
+
+    return {
+        "plan": calculate_study_progress(plan)
+    }

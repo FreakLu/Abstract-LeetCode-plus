@@ -84,3 +84,52 @@ export const updateReviewMastery = async (problemNumber, masteryLevel) => {
 
     return response.json();
 };
+
+export const getReviewActivity = async () => {
+    const response = await fetch("http://127.0.0.1:8000/api/review/activity");
+    if (!response.ok) {
+        throw new Error("学习活跃度加载失败");
+    }
+
+    const data = await response.json();
+    return data.activity || {};
+};
+
+export const getStudyPlanStrategies = async () => {
+    const response = await fetch("http://127.0.0.1:8000/api/study-plan/strategies");
+    if (!response.ok) {
+        throw new Error("学习策略加载失败");
+    }
+
+    const data = await response.json();
+    return data.strategies || [];
+};
+
+export const getStudyPlan = async () => {
+    const response = await fetch("http://127.0.0.1:8000/api/study-plan");
+    if (!response.ok) {
+        throw new Error("学习计划加载失败");
+    }
+
+    const data = await response.json();
+    return data.plan;
+};
+
+export const saveStudyPlan = async (targetDate, strategy) => {
+    const response = await fetch("http://127.0.0.1:8000/api/study-plan", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            target_date: targetDate,
+            strategy,
+        }),
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || "学习计划保存失败");
+    }
+
+    const data = await response.json();
+    return data.plan;
+};
